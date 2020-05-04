@@ -139,7 +139,7 @@ def load_data(entries, test_split = 0.4, MAXSEQ = MAXSEQ):
 	for entry in entries:
 		if len(entry.seqs) > max_sentence:
 			max_sentence = len(entry.seqs)
-	print(max_sentence)
+        print(max_sentence)
 	contain_values = []
 	for entry in entries:
 		letter_to_str_index_df = pd.DataFrame({
@@ -173,7 +173,7 @@ def load_data(entries, test_split = 0.4, MAXSEQ = MAXSEQ):
 	y_train = y_train
 
 	y_data = np.array(contain_values)
-	y_data = y_data.reshape(5, 99997, 1)
+	y_data = y_data.reshape(len(data), max_sentence, 1)
 	y_data_train = y_data[:train_size]
 	print(y_data_train)
 	print(y_train[0])

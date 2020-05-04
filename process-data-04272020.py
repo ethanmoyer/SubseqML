@@ -139,7 +139,7 @@ def load_data(entries, test_split = 0.4, MAXSEQ = MAXSEQ):
 	for entry in entries:
 		if len(entry.seqs) > max_sentence:
 			max_sentence = len(entry.seqs)
-        print(max_sentence)
+	print(max_sentence)
 	contain_values = []
 	for entry in entries:
 		letter_to_str_index_df = pd.DataFrame({
@@ -202,7 +202,6 @@ def load_data(entries, test_split = 0.4, MAXSEQ = MAXSEQ):
 	print(y_train[0])
 
 	print('y_train[0][0]')
-	#print(len(y_train[0][0]))
 	print(type(y_train[0][0]))
 	print(y_train[0][0])
 
@@ -230,15 +229,6 @@ if __name__ == "__main__":
 	model.summary()
 	
 	print ('Fitting model...')	
-	length = 5
-	seq = np.array([i/float(length) for i in range(2 * length)])
-	X = seq.reshape(2, length, 1)
-	y = seq.reshape(2, length, 1)
-	print(X)
-	print(y)
-	print(type(y))
-	print(type(y[0]))
-	print(type(y[0][0]))
 
 	history = model.fit(X_train, y_train, batch_size=20, epochs=EPCOHS, validation_data=(X_train, y_train), verbose = 1)
 	quit()

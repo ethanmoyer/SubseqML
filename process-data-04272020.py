@@ -53,7 +53,7 @@ def create_entries():
 	from os.path import isfile, join
 	files = [f for f in listdir(mypath) if isfile(join(mypath, f))]
 	entries = []
-	for file in files[:10]:
+	for file in files:
 		split_file = file.split('_')
 		print(split_file)
 		with open(mypath + file, 'r') as f:
@@ -129,12 +129,12 @@ def tf_dna_encode_embedding_table(dna_input, name="dna_encode"):
 	return encoded_dna
 '''
 
-EPCOHS = 100 #	an arbitrary cutoff, generally defined as "one pass over the entire dataset", used to separate training into distinct phases, which is useful for logging and periodic evaluation.
-BATCH_SIZE = 32 # a set of N samples. The samples in a batch are processed` independently, in parallel. If training, a batch results in only one update to the model.
+EPCOHS = 20 #	an arbitrary cutoff, generally defined as "one pass over the entire dataset", used to separate training into distinct phases, which is useful for logging and periodic evaluation.
+BATCH_SIZE = 16 # a set of N samples. The samples in a batch are processed` independently, in parallel. If training, a batch results in only one update to the model.
 OUTPUT_DIM = 64 # Embedding output
 
 DROPOUT_RATIO = 0.2 # proportion of neurones not used for training
-MAXSEQ = 26 # cuts text after number of these characters in pad_sequences
+MAXSEQ = 5 # cuts text after number of these characters in pad_sequences
 RNN_HIDDEN_DIM = 32
 
 METRICS = [
@@ -194,7 +194,7 @@ def create_plots(history):
 
 
 def letter_to_index(letter):
-	_alphabet = 'ATGC'
+	_alphabet = 'atgc'
 	return next((i + 1 for i, _letter in enumerate(_alphabet) if _letter == letter), None)
 
 
@@ -232,21 +232,21 @@ def load_data(entries, test_split = 0.2, MAXSEQ = MAXSEQ):
 			})
 
 		seq_to_index_df['col'] = seq_df['col'].apply(lambda x: [int(letter_to_index(e)) for e in x])
-
+		'''
 		padded_integer_df['col'] = [[0] * (MAXSEQ - len(x)) + x for x in seq_to_index_df['col']] + [[0] * MAXSEQ] * (max_sentence - len(seq_to_index_df['col']))
 
 		if len(entry.contains) < max_sentence:
 			entry.contains += [0] * (max_sentence - len(entry.contains))
-
+		'''
 		contain_values += entry.contains
 		# May have to change entry.contains to np.array(entry.contains)
-		data = data.append({'seqs': padded_integer_df['col'].tolist(), 'contains': entry.contains}, ignore_index=True)
+		data = data.append({'seqs': seq_to_index_df['col'].tolist(), 'contains': entry.contains}, ignore_index=True)
 		
 	#print(matches/total)
 	from sklearn.model_selection import train_test_split
 
-	train_df, test_df = train_test_split(data, test_size=0.2)
-	train_df, val_df = train_test_split(train_df, test_size=0.2)
+	train_df, test_df = train_test_split(data, test_size=test_split)
+	train_df, val_df = train_test_split(train_df, test_size=test_split)
 
 	train_labels = np.array(train_df['contains'].tolist())
 	val_labels = np.array(val_df.pop('contains').tolist())

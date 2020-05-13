@@ -53,7 +53,7 @@ def create_entries():
 	from os.path import isfile, join
 	files = [f for f in listdir(mypath) if isfile(join(mypath, f))]
 	entries = []
-	for file in files:
+	for file in files[:20]:
 		split_file = file.split('_')
 		print(split_file)
 		with open(mypath + file, 'r') as f:
@@ -160,7 +160,7 @@ def create_lstm(number_of_classes, time_steps, features, metrics = METRICS, rnn_
 	model.add(Dense(1, activation='sigmoid', bias_initializer=output_bias))
 	model.compile('adam', 'mean_squared_error', metrics=['accuracy'])
 	return model
-
+'''' We are less concerened with this lower dimensional network because
 def create_lstm_test(input_dim, input_length, rnn_hidden_dim = RNN_HIDDEN_DIM, output_dim = OUTPUT_DIM, dropout = DROPOUT_RATIO):
 	model = Sequential()
 
@@ -172,7 +172,7 @@ def create_lstm_test(input_dim, input_length, rnn_hidden_dim = RNN_HIDDEN_DIM, o
 	model.add(Dense(1, activation='sigmoid'))
 	model.compile('adam', 'binary_crossentropy', metrics=['accuracy'])
 	return model
-
+'''
 def create_plots(history):
 	plt.plot(history.history['acc'])
 	plt.plot(history.history['val_acc'])
@@ -232,7 +232,7 @@ def load_data(entries, test_split = 0.2, MAXSEQ = MAXSEQ):
 			})
 
 		seq_to_index_df['col'] = seq_df['col'].apply(lambda x: [int(letter_to_index(e)) for e in x])
-		'''
+		''' Add back later when the fragment size increases. Simply removed for memory/speed purposes
 		padded_integer_df['col'] = [[0] * (MAXSEQ - len(x)) + x for x in seq_to_index_df['col']] + [[0] * MAXSEQ] * (max_sentence - len(seq_to_index_df['col']))
 
 		if len(entry.contains) < max_sentence:

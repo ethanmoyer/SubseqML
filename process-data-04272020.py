@@ -208,8 +208,8 @@ def load_data(entries_5, entries_6, test_split = 0.2, MAXSEQ = MAXSEQ):
 	data_labels = np.array(data['contains'].tolist())
 
 	test_size = int(len(entries_6) * (1 - test_split))
-	train_df = train_size[:len(entries_5)]
-	test_df = train_size[len(entries_5):]
+	train_df = data[:len(entries_5)]
+	test_df = data[len(entries_5):]
 	test_df = test_df[:test_size]
 	val_df = test_df[test_size:]
 

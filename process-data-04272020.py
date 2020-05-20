@@ -160,7 +160,7 @@ def letter_to_index(letter):
 
 
 # Connect this df with the create_entries function above
-def load_data(entries_4, entries_5, test_split = 0.2, MAXSEQ = MAXSEQ):
+def load_data(entries_5, entries_6, test_split = 0.2, MAXSEQ = MAXSEQ):
 	matches = 0
 	total = 0
 	data = pd.DataFrame({
@@ -168,7 +168,7 @@ def load_data(entries_4, entries_5, test_split = 0.2, MAXSEQ = MAXSEQ):
 		'contains': []
 	})
 	max_sentence = 0
-	entries = entries_4 + entries_5
+	entries = entries_5 + entries_6
 	for entry in entries:
 		if len(entry.seqs) > max_sentence:
 			max_sentence = len(entry.seqs)
@@ -211,9 +211,9 @@ def load_data(entries_4, entries_5, test_split = 0.2, MAXSEQ = MAXSEQ):
 	'''
 	data_labels = np.array(data['contains'].tolist())
 
-	test_size = int(len(entries_5) * (1 - test_split))
-	train_df = train_size[:len(entries_4)]
-	test_df = train_size[len(entries_4):]
+	test_size = int(len(entries_6) * (1 - test_split))
+	train_df = train_size[:len(entries_5)]
+	test_df = train_size[len(entries_5):]
 	test_df = test_df[:test_size]
 	val_df = test_df[test_size:]
 
@@ -263,10 +263,10 @@ def load_data(entries_4, entries_5, test_split = 0.2, MAXSEQ = MAXSEQ):
 
 if __name__ == "__main__":
 	print ('Gathering entries...')
-	entries_4, entries_5 = create_entries()
-	input_dim = len(entries_4) + len(entries_5) + 1
-	print ('Loading data...')a
-	train_features, train_labels, test_features, test_labels, val_features, val_labels, initial_bias, class_weight = load_data(entries_4, entries_5)	
+	entries_5, entries_6 = create_entries()
+	input_dim = len(entries_5) + len(entries_6) + 1
+	print ('Loading data...')
+	train_features, train_labels, test_features, test_labels, val_features, val_labels, initial_bias, class_weight = load_data(entries_5, entries_6)	
 
 	print ('Creating model...')
 	model = create_lstm(input_dim, len(train_features[0]), len(train_features[0][0]), output_bias=initial_bias)

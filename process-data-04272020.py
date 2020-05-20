@@ -104,8 +104,8 @@ def create_entries():
 	from os import listdir
 	from os.path import isfile, join
 	files = [f for f in listdir(mypath) if isfile(join(mypath, f))]
-	entries_4 = []
 	entries_5 = []
+	entries_6 = []
 	for file in files:
 		split_file = file.split('_')
 		print(split_file)
@@ -124,11 +124,11 @@ def create_entries():
 				seqs.append(line_seq)
 				contains.append(int(line_contains.strip()))
 			f.close()
-			if length == '4':
-				entries_4.append(Entry(gene, seq, seqs, contains))
-			elif length == '5':
+			if length == '5':
 				entries_5.append(Entry(gene, seq, seqs, contains))
-	return entries_4, entries_5
+			elif length == '6':
+				entries_6.append(Entry(gene, seq, seqs, contains))
+	return entries_5, entries_6
 
 
 EPCOHS = 3 #	an arbitrary cutoff, generally defined as "one pass over the entire dataset", used to separate training into distinct phases, which is useful for logging and periodic evaluation.
@@ -265,7 +265,7 @@ if __name__ == "__main__":
 	print ('Gathering entries...')
 	entries_4, entries_5 = create_entries()
 	input_dim = len(entries_4) + len(entries_5) + 1
-	print ('Loading data...')
+	print ('Loading data...')a
 	train_features, train_labels, test_features, test_labels, val_features, val_labels, initial_bias, class_weight = load_data(entries_4, entries_5)	
 
 	print ('Creating model...')

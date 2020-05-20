@@ -113,6 +113,7 @@ def create_entries():
 			length = len(split_file)
 			gene = split_file[0]
 			seq = split_file[1]
+			length = split_file[2]
 			seqs = []
 			contains = []
 			for line in f:
@@ -123,7 +124,10 @@ def create_entries():
 				seqs.append(line_seq)
 				contains.append(int(line_contains.strip()))
 			f.close()
-			entries_6.append(Entry(gene, seq, seqs, contains))
+			if length == '5':
+				entries_5.append(Entry(gene, seq, seqs, contains))
+			elif length == '6':
+				entries_6.append(Entry(gene, seq, seqs, contains))
 	return entries_5, entries_6
 
 

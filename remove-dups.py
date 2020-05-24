@@ -8,13 +8,14 @@ def remove_duplicates(dir):
     unique = []
     for filename in os.listdir(dir):
     	filename_trimmed = shorten_filename(filename)
-    	print(filename_trimmed)
-    	os.rename(dir + "/" + filename, dir + "/" + filename_trimmed)
+    	
+    	#os.rename(dir + "/" + filename, dir + "/" + filename_trimmed)
 
 def shorten_filename(name):
 
 	split_file = name.split('_')
 	if len(split_file) == 5:
+		print(split_file)
 		name = "_".join(split_file[:len(split_file) - 2])
 		name = name + "_" + split_file[len(split_file) - 1]
 	return name

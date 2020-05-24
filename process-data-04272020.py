@@ -92,20 +92,20 @@ import os
 import tempfile
 
 class Entry:
-	def __init__(self, gene, seq, seqs, contains):
+	def __init__(self, gene, seq, length, seqs, contains):
 		self.gene = gene
 		self.seq = seq
 		self.seqs = seqs
 		self.contains = contains
+		self.length = length
 
 
 def create_entries():
-	mypath = 'data2_1e4/'
+	mypath = 'data1_1e3/'
 	from os import listdir
 	from os.path import isfile, join
 	files = [f for f in listdir(mypath) if isfile(join(mypath, f))]
-	entries_5 = []
-	entries_6 = []
+	entries = []
 	for file in files:
 		split_file = file.split('_')
 		print(split_file)
@@ -122,13 +122,10 @@ def create_entries():
 				if ('Subsequence' in line_seq):
 					continue
 				seqs.append(line_seq)
-				contains.append(int(line_contains.strip()))
+				contains.append(float(line_contains.strip()))
 			f.close()
-			if length == '5':
-				entries_5.append(Entry(gene, seq, seqs, contains))
-			elif length == '6':
-				entries_6.append(Entry(gene, seq, seqs, contains))
-	return entries_5, entries_6
+			entries.append(Entry(gene, seq, length, seqs, contains))
+	return entries
 
 
 EPCOHS = 3 #	an arbitrary cutoff, generally defined as "one pass over the entire dataset", used to separate training into distinct phases, which is useful for logging and periodic evaluation.
@@ -136,7 +133,7 @@ BATCH_SIZE = 32 # a set of N samples. The samples in a batch are processed` inde
 OUTPUT_DIM = 64 # Embedding output
 
 DROPOUT_RATIO = 0.2 # proportion of neurones not used for training
-MAXSEQ = 5 # cuts text after number of these characters in pad_sequences
+MAXSEQ = 6 # cuts text after number of these characters in pad_sequences
 RNN_HIDDEN_DIM = 32
 
 def create_lstm(number_of_classes, time_steps, features, rnn_hidden_dim = RNN_HIDDEN_DIM, output_dim = OUTPUT_DIM, dropout = DROPOUT_RATIO, output_bias=None):
@@ -150,17 +147,23 @@ def create_lstm(number_of_classes, time_steps, features, rnn_hidden_dim = RNN_HI
 	model.add(TimeDistributed(LSTM(rnn_hidden_dim)))
 	model.add(Dropout(dropout))
 	model.add(Dense(1, activation='sigmoid', bias_initializer=output_bias))
-	model.compile('adam', loss='binary_crossentropy', metrics=['accuracy'])
+	model.compile('adam', loss=tf.keras.losses.MeanSquaredError(), metrics=['accuracy']) #loss='binary_crossentropy'
 	return model
 
 
 def letter_to_index(letter):
 	_alphabet = 'atgc'
-	return next((i + 1 for i, _letter in enumerate(_alphabet) if _letter == letter), None)
+	return next(((i + 1) / 4 for i, _letter in enumerate(_alphabet) if _letter == letter), None)
 
+
+def shuffle(df, n=1, axis=0):     
+    df = df.copy()
+    for _ in range(n):
+        df.apply(np.random.shuffle, axis=axis)
+    return df
 
 # Connect this df with the create_entries function above
-def load_data(entries_5, entries_6, test_split = 0.2, MAXSEQ = MAXSEQ):
+def load_data(entries, test_split = 0.2, MAXSEQ = MAXSEQ):
 	matches = 0
 	total = 0
 	data = pd.DataFrame({
@@ -168,13 +171,13 @@ def load_data(entries_5, entries_6, test_split = 0.2, MAXSEQ = MAXSEQ):
 		'contains': []
 	})
 	max_sentence = 0
-	entries = entries_5 + entries_6
 	for entry in entries:
 		if len(entry.seqs) > max_sentence:
 			max_sentence = len(entry.seqs)
 	print('Number of timesteps per file: {}'.format(max_sentence))
 	contain_values = []
-	for entry in entries:
+	sorted_entries = sorted(entries, key=lambda x: x.length, reverse=False)
+	for entry in sorted_entries:
 		seq_df = pd.DataFrame({
 			'col': []
 		})
@@ -201,22 +204,25 @@ def load_data(entries_5, entries_6, test_split = 0.2, MAXSEQ = MAXSEQ):
 
 		contain_values += entry.contains
 		# May have to change entry.contains to np.array(entry.contains)
-		data = data.append({'seqs': seq_to_index_df['col'].tolist(), 'contains': entry.contains}, ignore_index=True)
+		data = data.append({'seqs': padded_integer_df['col'].tolist(), 'contains': entry.contains}, ignore_index=True)
 
 	#print(matches/total)
 	from sklearn.model_selection import train_test_split
-	'''
-	train_df, test_df = train_test_split(data, test_size=test_split)
-	train_df, val_df = train_test_split(train_df, test_size=test_split)
-	'''
+
 	data_labels = np.array(data['contains'].tolist())
-
-	test_size = int(len(entries_6) * (1 - test_split))
-	train_df = data[:len(entries_5)]
-	test_df = data[len(entries_5):]
-	test_df = test_df[:test_size]
+	base_entry_number = max_sentence - sorted_entries[0].length + 1
+	train_df = data[:len(base_entry_number)]
+	test_df = data[len(base_entry_number):]
+	test_size = int(len(test_df) * (1 - test_split))
 	val_df = test_df[test_size:]
+	test_df = test_df[:test_size]
 
+	split_test_size = int(len(test_df) * (.5))
+
+	frames = [train_df, test_df[:split_test_size]]
+	train_df = pd.concat(frames)
+	test_df = test_df[split_test_size:]
+	train_df = shuffle(train_df)
 	pos = 0
 	neg = 0
 	for i in range(len(data_labels)):
@@ -248,8 +254,6 @@ def load_data(entries_5, entries_6, test_split = 0.2, MAXSEQ = MAXSEQ):
 	val_features = np.array(val_df['seqs'].tolist())
 	test_features = np.array(test_df['seqs'].tolist())
 
-	#print(train_labels)
-
 	print('Training labels shape:', train_labels.shape)
 	print('Validation labels shape:', val_labels.shape)
 	print('Test labels shape:', test_labels.shape)
@@ -257,19 +261,18 @@ def load_data(entries_5, entries_6, test_split = 0.2, MAXSEQ = MAXSEQ):
 	print('Training features shape:', train_features.shape)
 	print('Validation features shape:', val_features.shape)
 	print('Test features shape:', test_features.shape)
-	
 	return train_features, train_labels, test_features, test_labels, val_features, val_labels, initial_bias, class_weight
 
 
 if __name__ == "__main__":
 	print ('Gathering entries...')
-	entries_5, entries_6 = create_entries()
-	input_dim = len(entries_5) + len(entries_6) + 1
+	entries = create_entries()
+	input_dim = len(entries) + 1
 	print ('Loading data...')
-	train_features, train_labels, test_features, test_labels, val_features, val_labels, initial_bias, class_weight = load_data(entries_5, entries_6)	
+	train_features, train_labels, test_features, test_labels, val_features, val_labels, initial_bias, class_weight = load_data(entries)	
 
 	print ('Creating model...')
-	model = create_lstm(input_dim, len(train_features[0]), len(train_features[0][0]), output_bias=initial_bias)
+	model = create_lstm(input_dim, len(train_features[0]), MAXSEQ, output_bias=initial_bias)
 	
 	model.summary()
 
@@ -293,8 +296,8 @@ if __name__ == "__main__":
 				match += 1
 			if test_labels[i][j] == 1:
 				total += 1
-
-	quit(match/total)
+	print('Predicted true: {:f} \t Total true: {:f} \t Percent predicted true {:f}'.format(match, total, match/total))
+	print(match/total)
 	baseline_results = model.evaluate(test_features, test_labels, batch_size=BATCH_SIZE, verbose=1)
 	for name, value in zip(model.metrics_names, baseline_results):
  		print(name, ': ', value)

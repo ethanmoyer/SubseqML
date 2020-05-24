@@ -210,7 +210,7 @@ def load_data(entries, test_split = 0.2, MAXSEQ = MAXSEQ):
 	from sklearn.model_selection import train_test_split
 
 	data_labels = np.array(data['contains'].tolist())
-	base_entry_number = max_sentence - sorted_entries[0].length + 1
+	base_entry_number = max_sentence - 5 + 1 # Replace with sorted_entries[0].length
 	train_df = data[:len(base_entry_number)]
 	test_df = data[len(base_entry_number):]
 	test_size = int(len(test_df) * (1 - test_split))

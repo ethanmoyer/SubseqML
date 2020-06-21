@@ -148,16 +148,16 @@ def create_lstm(number_of_classes, time_steps, features, rnn_hidden_dim = RNN_HI
 	model = Sequential()
 	model.add(Embedding(number_of_classes, OUTPUT_DIM, name='embedding_input_layer', input_length=time_steps, input_shape=(time_steps, features))) 
 	model.add(Dropout(dropout))
-	model.add(TimeDistributed(LSTM(OUTPUT_DIM * features)))
+	model.add(TimeDistributed(LSTM(OUTPUT_DIM)))
 	# Try flattening it
-	#model.add(Dense(features, activation='sigmoid')) 
+	model.add(Dense(features, activation='sigmoid')) 
 
 	# Try normal LSTM layer
-	#model.add(LSTM(int(features/2), return_sequences=True))
+	model.add(LSTM(int(features/2), return_sequences=True))
 
-	#model.add(TimeDistributed(Dense(int(features/4))))
+	model.add(TimeDistributed(Dense(int(features/4))))
 
-	#model.add(TimeDistributed(LSTM(rnn_hidden_dim, return_sequences=True)))
+	model.add(TimeDistributed(LSTM(rnn_hidden_dim, return_sequences=True)))
 	model.add(Dense(1, activation='sigmoid'))
 	model.compile('adam', loss='mean_squared_error', metrics=['accuracy']) #loss='binary_crossentropy'
 	return model

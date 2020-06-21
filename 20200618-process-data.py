@@ -109,7 +109,7 @@ def create_entries():
 	files = [f for f in listdir(mypath) if isfile(join(mypath, f))]
 	entries = []
 	maxseq = 0
-	for file in files[:50]:
+	for file in files[:1000]:
 		split_file = file.split('_')
 		print(split_file)
 		with open(mypath + file, 'r') as f:
@@ -135,7 +135,7 @@ def create_entries():
 	return entries, maxseq
 
 
-EPCOHS = 3 #	an arbitrary cutoff, generally defined as "one pass over the entire dataset", used to separate training into distinct phases, which is useful for logging and periodic evaluation.
+EPCOHS = 50 #	an arbitrary cutoff, generally defined as "one pass over the entire dataset", used to separate training into distinct phases, which is useful for logging and periodic evaluation.
 BATCH_SIZE = 32 # a set of N samples. The samples in a batch are processed` independently, in parallel. If training, a batch results in only one update to the model.
 OUTPUT_DIM = 64 # Embedding output
 
@@ -148,17 +148,18 @@ def create_lstm(number_of_classes, time_steps, features, rnn_hidden_dim = RNN_HI
 	model = Sequential()
 	model.add(Embedding(number_of_classes, OUTPUT_DIM, name='embedding_input_layer', input_length=time_steps, input_shape=(time_steps, features))) 
 	model.add(Dropout(dropout))
-	model.add(TimeDistributed(LSTM(OUTPUT_DIM)))
-	# Try flattening it
-	model.add(Dense(features, activation='sigmoid')) 
+	
+	# Flatten layer from 4D to 3D
+	model.add(TimeDistributed(LSTM(128)))
 
-	# Try normal LSTM layer
-	model.add(LSTM(int(features/2), return_sequences=True))
+	# Two rounds of Dense and LSTM
+	model.add(Dense(64, activation='sigmoid')) 
+	model.add(LSTM(64, return_sequences=True))
 
-	model.add(TimeDistributed(Dense(int(features/4))))
+	model.add(Dense(32, activation='sigmoid')) 
+	model.add(LSTM(32, return_sequences=True))
 
-	model.add(TimeDistributed(LSTM(rnn_hidden_dim, return_sequences=True)))
-	model.add(Dense(1, activation='sigmoid'))
+	model.add(Dense(1, activation='softmax'))
 	model.compile('adam', loss='mean_squared_error', metrics=['accuracy']) #loss='binary_crossentropy'
 	return model
 
@@ -187,7 +188,7 @@ def load_data(entries, MAXSEQ, test_split = 0.2):
 		if len(entry.seqs) > max_sentence:
 			max_sentence = len(entry.seqs)
 	print('Number of timesteps per file: {}'.format(max_sentence))
-
+	i = 0
 	for entry in sorted(entries, key=lambda x: x.length, reverse=False):
 		seq_df = pd.DataFrame({
 			'col': []
@@ -215,6 +216,8 @@ def load_data(entries, MAXSEQ, test_split = 0.2):
 
 		# May have to change entry.contains to np.array(entry.contains)
 		data = data.append({'seqs': padded_integer_df['col'].tolist(), 'contains': entry.contains}, ignore_index=True)
+		i = i + 1
+		print('Percentage Complete: {}'.format(i / 1000 * 100))
 
 	test_size = int(len(data) * (1 - test_split))
 	train_df = data[:test_size]

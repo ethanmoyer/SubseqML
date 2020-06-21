@@ -150,12 +150,12 @@ def create_lstm(number_of_classes, time_steps, features, rnn_hidden_dim = RNN_HI
 	model.add(Dropout(dropout))
 	model.add(TimeDistributed(LSTM(OUTPUT_DIM * features)))
 	# Try flattening it
-	model.add(Dense(features, activation='sigmoid')) 
+	#model.add(Dense(features, activation='sigmoid')) 
 
 	# Try normal LSTM layer
-	model.add(LSTM(int(features/2), return_sequences=True))
+	#model.add(LSTM(int(features/2), return_sequences=True))
 
-	model.add(TimeDistributed(Dense(int(features/4))))
+	#model.add(TimeDistributed(Dense(int(features/4))))
 
 	#model.add(TimeDistributed(LSTM(rnn_hidden_dim, return_sequences=True)))
 	model.add(Dense(1, activation='sigmoid'))

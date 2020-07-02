@@ -34,21 +34,13 @@ The processing.py script prompts the user for the location of both the training 
 
 ## Machine Learning/Neural Netowork Solutions
 
-#### Required installations
+#### Required virtual environment
 
-Run this command to install sklearn.
+Run this command to load the virtual environment
 ```bash
-$ pip install sklearn
-```
-Run this command to install pandas.
-```bash
-$ pip install pandas
+$ source venv/bin/activate
 ```
 
-Run this command to install numpy.
-```bash
-$ pip install numpy
-```
 #### Support Vector Machines (SVMs)
 
 The svm.py and svm_pca.py scripts are responsible for conducting the SVMs analysis. 

@@ -8,29 +8,17 @@ All the data preprocessed data used in the analysises are kept in the data direc
 
 All of the Matlab code created to curate and cluster data is in the matlab-data-curation directory.
 
-#### currateData.m
+### generateDNA.m
 
-This function accepts the location of a table object (.csv) and creates two arrays of equal size: one contains only true outputs and the other contains only false outputs. The result is a new table object (.csv) with the two concatenated together with the prefix 'split_' saved under the ../data/ directory.
+This function generates a dna molecule of length n with the appropriate proporitons pa, pt, pc, and pg. The function returns the randomly generated set of DNA and writes it to dna.txt. An alternative to this function is randseq from the Bioinformatics Toolbox that generates a random sequence of given length n; however, randseq cannot generate sequences with specified propotions of nucleotides.
 
-#### select_test_data.m
+#### gatherData.m
 
-This function accepts the location of a table (.csv) with equally split true and false outputs prefixed with "split_", the required number of samples from the table, and the proportion of true samples to include in new sample. The result is a curated table (.csv) prefixed with the proporiton of true samples and the number of samples.
+This function gathers the data for the subsequence matching analysis through a series of iterative steps. To generate a representative data set it utilizes the output from the generateDNA function for processing. The function loops a specified range (default is 5 to 20 bp) and fragments the DNA sequence based on the current value in that range. In other words, it generates consecutive overlapping k-mers for each of the values in that range. Using these fragments, the function uses the generateNonopTable function to generate pairwise matches of each of the k-mer sequences. For instance, if the function is currently generating 5-mer sequences, it will compare each of the 5-mer sequences with all of the other 5-mer sequences in the DNA sequence. For each k-mer, the generateNonopTable function stores a table objective with the k-mers and their respective matching values of either a logical TRUE or FALSE.
 
-#### getMismatches.m
+### gatherNonopTable.m
 
-This function accepts the location of a resulting table (.csv) from the machine learing algoirthms prefixed with "examine_" and the name of the algorithm (either "SVM_", "RF_", or "CNN_"). It creates four arrays contining the different mismatches (true/true, true/false, false/true, and false/false). The result is a new table object (.csv) with the four concatenated together with the prefix 'mismatched_' saved under the ../data/ directory.
-
-#### generateFeaturePlots.m
-
-This function accepts the location of a mismatched table (.csv) prefixed with 'mismatched_' and calls data1DPlot based on the feature set of the table, generating mismatched distributions for each feature.
-
-#### data1DPlot.m
-
-This function accepts the location of mismatched tables (.csv) prefixed with 'mismatched_' and a feature from the data set and plots the distrubition of the feature across both true mismatches and false mismatches. These plots are saved to the ../feature/ directory prefixed with the technique used, whether it's mapping true or false, and the name of the feature.
-
-## Data preprocessing
-
-The processing.py script prompts the user for the location of both the training data set and the test data set. The prompt requires that the provided data sets be provided from the data directory and contain the words 'train' and 'test' in them; otherwise, the script will exit. Given that the correct data sets are provided from the correct directory, the script normalizes all of the data for each entry across all features and produces two normalized training and test sets in the processed_data directory.
+Given either the reference set of fragments, the query sequence, name or location of the reference DNA, the length of the subsequence, and the maximum possible score for the given query sequence, this function generates nonoptimized (overlapping sequences) data based on the given conditions. The function returns the data and writes it to data_nonop.csv.
 
 ## Machine Learning/Neural Netowork Solutions
 

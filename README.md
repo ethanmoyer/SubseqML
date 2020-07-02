@@ -29,16 +29,18 @@ Run this command to load the virtual environment
 $ source venv/bin/activate
 ```
 
-Then when running any of the following scripts, please use Python 3.7.
+When running any of the following scripts, please use Python 3.7.
 
 Pyenv might also be a good tool for managing python versions: https://github.com/pyenv/pyenv
 
 #### Long-Short Term Memory (LSTM) Classification
 
+The 04272020_subseq_match_class.py script performs a multidimensional LSTM classification on the subsequence data generated from the MATLAB data curation files.
+
 #### Long-Short Term Memory (LSTM) Prediction
 
+The 20200618_subseq_match_pred.py script performs a multidimensional LSTM preiction on the subsequence data generated from the MATLAB data curation files.
 
 ## NEUROMORPHIC SOLUTIONS TO HIGH DIMENSIONAL DNA SUBSEQUENCE MATCHING VIA K-MER WISE ALIGNMENT REPORT
 
 In the this repository is the write up of the project. This paper gives background to the problem and the avenue by which I went to solve it. Also it explores the alternatives to the machine learning algorithms that were explored as well.
-

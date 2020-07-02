@@ -1,4 +1,4 @@
-# VERTICALLY INTEGRATED PROJECT (VIP) REPORT: NEUROMORPHIC SOLUTIONS TO DNA SUBSEQUENCE AND RESTRICTION SITE ANALYSIS
+# VERTICALLY INTEGRATED PROJECT (VIP) REPORT: NEUROMORPHIC SOLUTIONS TO HIGH DIMENSIONAL DNA SUBSEQUENCE MATCHING VIA K-MER WISE ALIGNMENT 
 
 ## Data Curation/Analysis
 
@@ -29,37 +29,16 @@ Run this command to load the virtual environment
 $ source venv/bin/activate
 ```
 
-#### Support Vector Machines (SVMs)
-
-The svm.py and svm_pca.py scripts are responsible for conducting the SVMs analysis. 
-
-Both scripts prompt the user for the location of both the training data set and the test data set. The prompt requires that the provided data sets be provided from the processed_data directory and contain the words 'train' and 'test' in them; otherwise, the script will exit. In the console, the script will print the resulting confusion matrix and classification report on the analysis. Both will save the test data set under the analysis_data directory. The two scripts will have different prefixes: "SVM_" and "SVM_PCA_" respectively.
-
-In the casse of SVMs 2-component PCA, it will also display a graph of the test data ajusted to 2-components with PCA plotted against the support vector.
-
-#### Random Forest
-
-The random_forest.py script is responsible for conducting the random forest analysis.
-
-The script promptd the user for the location of both the training data set and the test data set. The prompt requires that the provided data sets be provided from the processed_data directory and contain the words 'train' and 'test' in them; otherwise, the script will exit.
-
-#### Convolution Neural Networks (CNNs)
-
-The cnn.py script is responsible for conducting the CNNs analysis.
-
-Before executing cnn.py, it's important to first set up tensorflow following this tutorial: 
-https://www.tensorflow.org/install/pip
-
-Then when running cnn.py, use Python version 3.7 like the following.
-```bash
-$ python3.7 cnn.py
-```
+Then when running any of the following scripts, please use Python 3.7.
 
 Pyenv might also be a good tool for managing python versions: https://github.com/pyenv/pyenv
 
-The script promptd the user for the location of the training data set, the test data set, and the validation data set. The prompt requires that the provided data sets be provided from the processed_data directory and contain the words 'train' in the trainining data set and the validation data set and 'test' in the test data set; otherwise, the script will exit.
+#### Long-Short Term Memory (LSTM) Classification
 
-## NEUROMORPHIC SOLUTIONS TO DNA SUBSEQUENCE AND RESTRICTION SITE ANALYSIS REPORT
+#### Long-Short Term Memory (LSTM) Prediction
+
+
+## NEUROMORPHIC SOLUTIONS TO HIGH DIMENSIONAL DNA SUBSEQUENCE MATCHING VIA K-MER WISE ALIGNMENT REPORT
 
 In the this repository is the write up of the project. This paper gives background to the problem and the avenue by which I went to solve it. Also it explores the alternatives to the machine learning algorithms that were explored as well.
 

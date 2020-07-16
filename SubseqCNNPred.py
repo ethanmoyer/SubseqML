@@ -15,7 +15,7 @@ def letter_to_index(letter):
 	_alphabet = 'atgc'
 	return next(((i + 1) / 4 for i, _letter in enumerate(_alphabet) if _letter == letter), None)
 
-mypath = '/Users/ethanmoyer/Desktop/Coursework/1920_spring/VIP/subsequence-matching/data/ref_sequences/'
+mypath = 'data/ref_sequences/'
 
 data = []
 
@@ -26,8 +26,8 @@ files = [f for f in listdir(mypath) if isfile(join(mypath, f)) and '20' in f]
 for file in files:
 	data.append(pd.read_csv(mypath + file))
 
-for i, entry_data in enumerate(data[:1000]):
-	print(f'File: {files[i]} - {i / 1000 * 100}')
+for i, entry_data in enumerate(data):
+	#print(f'File: {files[i]}')
 	query = file.split('_')[1]
 	entry_data['Subsequence'] = entry_data['Subsequence'] + query
 
@@ -88,7 +88,7 @@ if True:
 	plt.ylabel('loss')
 	plt.xlabel('epoch')
 	plt.legend(['train', 'test'], loc='upper left')
-	plt.savefig('cnn_data/cnn0_20_1000_abs_loss.png')
+	plt.savefig('cnn_data/cnn0_20_abs_loss.png')
 	plt.clf()
 
 	a = [math.sqrt(e) for e in history.history['loss']]
@@ -100,5 +100,5 @@ if True:
 	plt.xlabel('epoch')
 	plt.legend(['train', 'test'], loc='upper left')
 
-	plt.savefig('cnn_data/cnn0_20_1000_abs_loss.png')
+	plt.savefig('cnn_data/cnn0_20_rel_loss.png')
 #print(yhat)

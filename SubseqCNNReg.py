@@ -38,7 +38,7 @@ for i, entry_data in enumerate(data):
 
 	a = np.array(entry_data['kmer'].tolist())
 
-	a = a.reshape((1, a.shape[0], k))
+	a = a.reshape((1, a.shape[0], k * 2))
 
 	b = np.array(entry_data['score'].tolist())
 

@@ -31,6 +31,9 @@ for file in files:
 for i, entry_data in enumerate(data):
 	#print(f'File: {files[i]}')
 
+	query = file.split('_')[0]
+	entry_data['kmer'] = entry_data['kmer'] + query
+
 	entry_data['kmer'] = entry_data['kmer'].apply(lambda x: [float(letter_to_index(elem)) for elem in x])
 
 	a = np.array(entry_data['kmer'].tolist())
@@ -80,7 +83,7 @@ if True:
 if True:
 
 	# fit model
-	history = model.fit(X_train, y_train, epochs = 100, batch_size = 16, verbose=1, validation_data=(X_test, y_test))
+	history = model.fit(X_train, y_train, epochs = 30, batch_size = 16, verbose=1, validation_data=(X_test, y_test))
 
 	plt.plot(history.history['loss'])
 	plt.plot(history.history['val_loss'])

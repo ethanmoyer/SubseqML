@@ -57,10 +57,20 @@ The SubseqLSTMClass.py script performs a multidimensional LSTM classification on
 
 The SubseqLSTMRegress.py script performs a multidimensional LSTM regression on the subsequence data generated from the MATLAB data curation files.
 
-### Convolution Neural Network (CNN) Regression
+#### Convolution Neural Network (CNN) Regression
 
 The SubseqCNNRegress.py script performs a multidimensional CNN regression on the subsequence data generated from the MATLAB data curation files.
 
 ### NEUROMORPHIC SOLUTIONS TO HIGH DIMENSIONAL DNA SUBSEQUENCE MATCHING VIA K-MER WISE ALIGNMENT REPORT
 
 In the this repository is the write up of the project after the first approach--LSTM classification. This paper gives background to the problem and the avenue by which I went to solve it. Also it explores the alternatives to the machine learning algorithms that were explored as well.
+
+## Data
+
+All data is stored in the data/ directory
+
+ref_sequences - used for the LSTM classification and prediction model
+
+ref_sequences0 - used for the CNN prediction model
+
+ref_sequences_motif0 - trained on particular motifs

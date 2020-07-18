@@ -25,7 +25,7 @@ from os import listdir
 from os.path import isfile, join
 files = [f for f in listdir(mypath) if isfile(join(mypath, f)) and str(k) in f]
 
-for file in files[:5]:
+for file in files:
 	data.append(pd.read_csv(mypath + file))
 
 for i, entry_data in enumerate(data):

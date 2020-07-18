@@ -91,7 +91,7 @@ if True:
 	plt.ylabel('loss')
 	plt.xlabel('epoch')
 	plt.legend(['train', 'test'], loc='upper left')
-	plt.savefig('cnn_data/cnn0_' + str(k) + '_abs_loss.png')
+	plt.savefig('cnn_data/cnn1_' + str(k) + '_abs_loss.png')
 	plt.clf()
 
 	a = [math.sqrt(e) for e in history.history['loss']]
@@ -103,5 +103,5 @@ if True:
 	plt.xlabel('epoch')
 	plt.legend(['train', 'test'], loc='upper left')
 
-	plt.savefig('cnn_data/cnn0_' + str(k) + '_rel_loss.png')
+	plt.savefig('cnn_data/cnn1_' + str(k) + '_rel_loss.png')
 #print(yhat)

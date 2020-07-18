@@ -19,7 +19,7 @@ mypath = 'data/ref_sequences1/'
 
 data = []
 
-k = 20
+k = 50
 
 from os import listdir
 from os.path import isfile, join

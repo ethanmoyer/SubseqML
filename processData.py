@@ -47,18 +47,22 @@ def create_alignment_table(subseq, kmer_list):
 
 
 parent_sequence = getFasta()
-k = 20
+k = 50
 
 for i in range(1000):
 	sequence = select_random_subseq(parent_sequence[0], 1000)
 	kmer_list = create_kmer_list(str(sequence.seq), k)
 	random_kmer = select_random_kmer(kmer_list)
 
-	aligner = Align.PairwiseAligner(match_score=1.0, mismatch_score = -2.0, gap_score = -2.5)
+	aligner = Align.PairwiseAligner()
+	aligner.match_score = 1.0
+	aligner.mismatch_score = -2.0
+	aligner.gap_score = -2.5
+	aligner.mode = 'local'
 	alignment_scores = create_alignment_table(random_kmer, kmer_list)
 	alignment_scores = [e / max(alignment_scores) for e in alignment_scores]
 
 	data = pd.DataFrame({'kmer': kmer_list, 'score': alignment_scores})
-	fdir = 'data/ref_sequences0/'
+	fdir = 'data/ref_sequences1/'
 	data.to_csv(fdir + random_kmer + '_' + str(k) + '.txt', mode = 'a', index = False)
 

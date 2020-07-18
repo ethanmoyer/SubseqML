@@ -7,6 +7,8 @@ from random import choice, random
 
 import pandas as pd
 
+import glob
+
 # Parses through the records and returns the sequence
 def getFasta(fasta = "data/sequence.fasta"):
 	records = []
@@ -64,5 +66,7 @@ for i in range(1000):
 
 	data = pd.DataFrame({'kmer': kmer_list, 'score': alignment_scores})
 	fdir = 'data/ref_sequences1/'
-	data.to_csv(fdir + random_kmer + '_' + str(k) + '.txt', mode = 'a', index = False)
+	filename = fdir + random_kmer + '_' + str(k) + '.txt'
+	if not glob.glob(filename):
+		data.to_csv(filename, mode = 'a', index = False)
 

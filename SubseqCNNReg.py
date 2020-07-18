@@ -33,7 +33,7 @@ for i, entry_data in enumerate(data):
 
 	query = file.split('_')[0]
 	entry_data['kmer'] = entry_data['kmer'] + query
-	print(entry_data['kmer'])
+
 	entry_data['kmer'] = entry_data['kmer'].apply(lambda x: [float(letter_to_index(elem)) for elem in x])
 
 	a = np.array(entry_data['kmer'].tolist())

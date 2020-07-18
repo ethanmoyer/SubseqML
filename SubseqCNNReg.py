@@ -92,9 +92,9 @@ if True:
 	plt.clf()
 
 	a = [math.sqrt(e) for e in history.history['loss']]
-	plt.plot(a / np.mean(y_train))
+	plt.plot(a)
 	a = [math.sqrt(e) for e in history.history['val_loss']]
-	plt.plot(a / np.mean(y_test))
+	plt.plot(a)
 	plt.title('model relative loss')
 	plt.ylabel('loss')
 	plt.xlabel('epoch')

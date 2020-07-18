@@ -47,7 +47,7 @@ def create_alignment_table(subseq, kmer_list):
 
 
 parent_sequence = getFasta()
-k = 50
+k = 20
 
 for i in range(1000):
 	sequence = select_random_subseq(parent_sequence[0], 1000)

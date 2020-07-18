@@ -25,7 +25,7 @@ from os import listdir
 from os.path import isfile, join
 files = [f for f in listdir(mypath) if isfile(join(mypath, f)) and str(k) in f]
 
-for file in files:
+for file in files[:5]:
 	data.append(pd.read_csv(mypath + file))
 
 for i, entry_data in enumerate(data):
@@ -33,7 +33,7 @@ for i, entry_data in enumerate(data):
 
 	query = file.split('_')[0]
 	entry_data['kmer'] = entry_data['kmer'] + query
-
+	print(entry_data['kmer'])
 	entry_data['kmer'] = entry_data['kmer'].apply(lambda x: [float(letter_to_index(elem)) for elem in x])
 
 	a = np.array(entry_data['kmer'].tolist())

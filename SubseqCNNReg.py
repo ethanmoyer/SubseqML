@@ -31,13 +31,13 @@ for file in files:
 for i, entry_data in enumerate(data):
 	#print(f'File: {files[i]}')
 
-	entry_data['kmer'] = entry_data['kmer'].apply(lambda x: [float(letter_to_index(elem)) for elem in x])
+	entry_data['Subsequence'] = entry_data['Subsequence'].apply(lambda x: [float(letter_to_index(elem)) for elem in x])
 
-	a = np.array(entry_data['kmer'].tolist())
+	a = np.array(entry_data['Subsequence'].tolist())
 
 	a = a.reshape((1, a.shape[0], 50))
 
-	b = np.array(entry_data['score'].tolist())
+	b = np.array(entry_data['Contains'].tolist())
 
 	if 'features' not in locals():
 		features = a

@@ -15,11 +15,11 @@ def letter_to_index(letter):
 	_alphabet = 'ATCG'
 	return next(((i + 1) / 4 for i, _letter in enumerate(_alphabet) if _letter == letter), None)
 
-mypath = 'data/ref_sequences0/'
+mypath = 'data/ref_sequences/'
 
 data = []
 
-k = 50
+k = 20
 
 from os import listdir
 from os.path import isfile, join

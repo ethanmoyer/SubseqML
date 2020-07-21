@@ -100,14 +100,14 @@ if True:
 	history = model.fit(X_train, y_train, epochs = 5, batch_size = 80, verbose=1, validation_data=(X_test, y_test))
 
 
-if False:
+if True:
 	plt.plot(history.history['loss'])
 	plt.plot(history.history['val_loss'])
 	plt.title('model absolute loss')
 	plt.ylabel('loss')
 	plt.xlabel('epoch')
 	plt.legend(['train', 'test'], loc='upper left')
-	plt.savefig('figures/cnn3_' + str(k) + '_abs_loss.png')
+	plt.savefig('figures/cnn4_' + str(k) + '_abs_loss.png')
 	plt.clf()
 
 if False:
@@ -119,7 +119,7 @@ if False:
 	plt.ylabel('loss')
 	plt.xlabel('epoch')
 	plt.legend(['train', 'test'], loc='upper left')
-	plt.savefig('figures/cnn3_' + str(k) + '_rel_loss.png')
+	plt.savefig('figures/cnn4_' + str(k) + '_rel_loss.png')
 	plt.clf()
 
 if False:
@@ -129,7 +129,7 @@ if False:
 	plt.ylabel('accuracy')
 	plt.xlabel('epoch')
 	plt.legend(['train', 'test'], loc='upper left')
-	plt.savefig('figures/cnn3_' + str(k) + '_accuracy.png')
+	plt.savefig('figures/cnn4_' + str(k) + '_accuracy.png')
 	plt.clf()
 
 

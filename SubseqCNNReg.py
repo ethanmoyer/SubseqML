@@ -56,22 +56,22 @@ X_train, X_test, y_train, y_test = train_test_split(features, outputs, test_size
 
 if True:
 	model = Sequential()
-	model.add(Conv1D(3, 8, strides=(1), padding="same", input_shape=input_shape[1:]))
-	model.add(BatchNormalization())
-	model.add(Dense(8, activation='relu'))
-	model.add(MaxPooling1D(pool_size=(2), strides=2))
-
-	model.add(Conv1D(3, 16, strides=(1), padding="same", input_shape=input_shape[1:]))
+	model.add(Conv1D(filters=6, kernel_size=16, strides=(1), padding="same", input_shape=input_shape[1:]))
 	model.add(BatchNormalization())
 	model.add(Dense(16, activation='relu'))
 	model.add(MaxPooling1D(pool_size=(2), strides=2))
 
-	model.add(Conv1D(3, 32, strides=(1), padding="same", input_shape=input_shape[1:]))
+	model.add(Conv1D(filters=6, kernel_size=16, strides=(1), padding="same", input_shape=input_shape[1:]))
 	model.add(BatchNormalization())
 	model.add(Dense(32, activation='relu'))
 	model.add(MaxPooling1D(pool_size=(2), strides=2))
 
-	model.add(Dropout(0.5))
+	model.add(Conv1D(filters=6, kernel_size=16, strides=(1), padding="same", input_shape=input_shape[1:]))
+	model.add(BatchNormalization())
+	model.add(Dense(64, activation='relu'))
+	model.add(MaxPooling1D(pool_size=(2), strides=2))
+
+	model.add(Dropout(0.2))
 	model.add(Flatten())
 	model.add(Dense(input_shape[1:2][0]))
 

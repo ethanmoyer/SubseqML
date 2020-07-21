@@ -82,7 +82,7 @@ if True:
 
 if True:
 	# fit model
-	history = model.fit(X_train, y_train, epochs = 30, batch_size = 16, verbose=1, validation_data=(X_test, y_test))
+	history = model.fit(X_train, y_train, epochs = 100, batch_size = 80, verbose=1, validation_data=(X_test, y_test))
 
 
 if True:
@@ -92,7 +92,7 @@ if True:
 	plt.ylabel('loss')
 	plt.xlabel('epoch')
 	plt.legend(['train', 'test'], loc='upper left')
-	plt.savefig('figures/cnn2_' + str(k) + '_abs_loss.png')
+	plt.savefig('figures/cnn3_' + str(k) + '_abs_loss.png')
 	plt.clf()
 
 if True:
@@ -104,7 +104,7 @@ if True:
 	plt.ylabel('loss')
 	plt.xlabel('epoch')
 	plt.legend(['train', 'test'], loc='upper left')
-	plt.savefig('figures/cnn2_' + str(k) + '_rel_loss.png')
+	plt.savefig('figures/cnn3_' + str(k) + '_rel_loss.png')
 	plt.clf()
 
 if True:
@@ -114,7 +114,7 @@ if True:
 	plt.ylabel('accuracy')
 	plt.xlabel('epoch')
 	plt.legend(['train', 'test'], loc='upper left')
-	plt.savefig('figures/cnn2_' + str(k) + '_accuracy.png')
+	plt.savefig('figures/cnn3_' + str(k) + '_accuracy.png')
 	plt.clf()
 
 #print(yhat)

@@ -15,7 +15,7 @@ def letter_to_index(letter):
 	_alphabet = 'ATCG'
 	return next(((i + 1) / 4 for i, _letter in enumerate(_alphabet) if _letter == letter), None)
 
-mypath = 'data/ref_sequences1/'
+mypath = 'data/ref_sequences2/'
 
 data = []
 
@@ -81,19 +81,21 @@ if True:
 	model.summary()
 
 if True:
-
 	# fit model
 	history = model.fit(X_train, y_train, epochs = 30, batch_size = 16, verbose=1, validation_data=(X_test, y_test))
 
+
+if True:
 	plt.plot(history.history['loss'])
 	plt.plot(history.history['val_loss'])
 	plt.title('model absolute loss')
 	plt.ylabel('loss')
 	plt.xlabel('epoch')
 	plt.legend(['train', 'test'], loc='upper left')
-	plt.savefig('cnn_data/cnn1_' + str(k) + '_abs_loss.png')
+	plt.savefig('figures/cnn2_' + str(k) + '_abs_loss.png')
 	plt.clf()
 
+if True:
 	a = [math.sqrt(e) for e in history.history['loss']]
 	plt.plot(a)
 	a = [math.sqrt(e) for e in history.history['val_loss']]
@@ -102,6 +104,17 @@ if True:
 	plt.ylabel('loss')
 	plt.xlabel('epoch')
 	plt.legend(['train', 'test'], loc='upper left')
+	plt.savefig('figures/cnn2_' + str(k) + '_rel_loss.png')
+	plt.clf()
 
-	plt.savefig('cnn_data/cnn1_' + str(k) + '_rel_loss.png')
+if True:
+	plt.plot(history.history['accuracy'])
+	plt.plot(history.history['val_accuracy'])
+	plt.title('model accuracy')
+	plt.ylabel('accuracy')
+	plt.xlabel('epoch')
+	plt.legend(['train', 'test'], loc='upper left')
+	plt.savefig('figures/cnn2_' + str(k) + '_accuracy.png')
+	plt.clf()
+
 #print(yhat)

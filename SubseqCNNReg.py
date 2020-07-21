@@ -40,7 +40,7 @@ from os import listdir
 from os.path import isfile, join
 files = [f for f in listdir(mypath) if isfile(join(mypath, f)) and str(k) in f]
 
-for file in files[:5]:
+for file in files:
 	data.append(pd.read_csv(mypath + file))
 
 for i, entry_data in enumerate(data):
@@ -97,7 +97,7 @@ if True:
 
 if True:
 	# fit model
-	history = model.fit(X_train, y_train, epochs = 5, batch_size = 80, verbose=1, validation_data=(X_test, y_test))
+	history = model.fit(X_train, y_train, epochs = 100, batch_size = 80, verbose=1, validation_data=(X_test, y_test))
 
 
 if True:

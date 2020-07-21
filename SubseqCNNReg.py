@@ -5,6 +5,8 @@ import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Flatten, Conv1D, MaxPooling1D, Dropout, BatchNormalization
 
+import tensorflow.keras.backend as K 
+
 from sklearn.model_selection import train_test_split
 
 import matplotlib.pyplot as plt
@@ -14,6 +16,19 @@ import math
 def letter_to_index(letter):
 	_alphabet = 'ATCG'
 	return next(((i + 1) / 4 for i, _letter in enumerate(_alphabet) if _letter == letter), None)
+
+
+def score_model(y_act, y_pred, f = 15):
+	max_pos_act_list = []
+	v = K.variable(0.)
+	for i in range(f):
+		max_pos_act = K.argmax(y_act)[-f:]
+		max_pos_pred = K.argmax(y_pred)[-f:]
+
+	agreements = sum([e in max_pos_act for e in max_pos_pred])
+	print(agreements / f)
+	return agreements / f
+
 
 mypath = 'data/ref_sequences2/'
 
@@ -25,7 +40,7 @@ from os import listdir
 from os.path import isfile, join
 files = [f for f in listdir(mypath) if isfile(join(mypath, f)) and str(k) in f]
 
-for file in files:
+for file in files[:5]:
 	data.append(pd.read_csv(mypath + file))
 
 for i, entry_data in enumerate(data):
@@ -76,16 +91,16 @@ if True:
 	model.add(Dense(input_shape[1:2][0]))
 
 	# Compiles the model
-	model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy', 'mse'])
+	model.compile(optimizer='adam', loss='mean_squared_error', metrics=['mse'])
 
 	model.summary()
 
 if True:
 	# fit model
-	history = model.fit(X_train, y_train, epochs = 100, batch_size = 80, verbose=1, validation_data=(X_test, y_test))
+	history = model.fit(X_train, y_train, epochs = 5, batch_size = 80, verbose=1, validation_data=(X_test, y_test))
 
 
-if True:
+if False:
 	plt.plot(history.history['loss'])
 	plt.plot(history.history['val_loss'])
 	plt.title('model absolute loss')
@@ -95,7 +110,7 @@ if True:
 	plt.savefig('figures/cnn3_' + str(k) + '_abs_loss.png')
 	plt.clf()
 
-if True:
+if False:
 	a = [math.sqrt(e) for e in history.history['loss']]
 	plt.plot(a)
 	a = [math.sqrt(e) for e in history.history['val_loss']]
@@ -107,7 +122,7 @@ if True:
 	plt.savefig('figures/cnn3_' + str(k) + '_rel_loss.png')
 	plt.clf()
 
-if True:
+if False:
 	plt.plot(history.history['accuracy'])
 	plt.plot(history.history['val_accuracy'])
 	plt.title('model accuracy')
@@ -116,5 +131,7 @@ if True:
 	plt.legend(['train', 'test'], loc='upper left')
 	plt.savefig('figures/cnn3_' + str(k) + '_accuracy.png')
 	plt.clf()
+
+
 
 #print(yhat)

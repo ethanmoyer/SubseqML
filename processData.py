@@ -62,7 +62,7 @@ k = 15
 
 motif = 'ATTGATTCGGATAGC'
 
-for j in range(1):
+for j in range(1000):
 
 	# biopython
 	#sequence = select_random_subseq(parent_sequence[0], 1000)

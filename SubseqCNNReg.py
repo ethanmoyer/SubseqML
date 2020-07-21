@@ -46,8 +46,6 @@ for i, entry_data in enumerate(data):
 		features = a
 		outputs = b
 	else:
-		print(features)
-		print(a)
 		features = np.vstack((features, a))
 		outputs = np.vstack((outputs, b))
 

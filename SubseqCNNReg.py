@@ -19,7 +19,7 @@ mypath = 'data/ref_sequences2/'
 
 data = []
 
-k = 50
+k = 15
 
 from os import listdir
 from os.path import isfile, join
@@ -46,6 +46,8 @@ for i, entry_data in enumerate(data):
 		features = a
 		outputs = b
 	else:
+		print(features)
+		print(a)
 		features = np.vstack((features, a))
 		outputs = np.vstack((outputs, b))
 

@@ -48,13 +48,13 @@ def create_alignment_table(subseq, kmer_list):
 	return [aligner.score(subseq, e) for e in kmer_list]
 
 
-def insert_random_motif(seq, motif, mismatches):
+def insert_random_motif(seq, motif, mismatches=0):
 	i = int(random() * (len(seq) - len(motif)))
 	if mismatches:
 		for j in range(mismatches):
 			k = int(random() * len(motif))
 			motif = motif[:k] + create_random_sequence(1) + motif[k:]
-	return seq[:i] + motif + seq[i:]
+	return seq[:i] + motif + seq[i + len(motif):]
 
 
 #parent_sequence = getFasta()
@@ -62,7 +62,7 @@ k = 15
 
 motif = 'ATTGATTCGGATAGC'
 
-for j in range(1000):
+for j in range(1):
 
 	# biopython
 	#sequence = select_random_subseq(parent_sequence[0], 1000)
@@ -70,6 +70,7 @@ for j in range(1000):
 	# Generate random seqeunce and insert the same motif n times
 	sequence = create_random_sequence(1000)
 	for i in range(int(random() * 11) + 5):
+		# Change insert random motif so that the length doesnt increase
 		sequence = insert_random_motif(sequence, motif, 0)
 
 	# biopython

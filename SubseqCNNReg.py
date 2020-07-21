@@ -19,15 +19,22 @@ def letter_to_index(letter):
 
 
 def score_model(y_act, y_pred, f = 15):
-	max_pos_act_list = []
-	v = K.variable(0.)
-	for i in range(f):
-		max_pos_act = K.argmax(y_act)[-f:]
-		max_pos_pred = K.argmax(y_pred)[-f:]
-
+	max_pos_pred = y_pred.argsort()[-f:]
+	max_pos_act = y_act.argsort()[-f:]
 	agreements = sum([e in max_pos_act for e in max_pos_pred])
-	print(agreements / f)
 	return agreements / f
+
+
+def score_samples(model, X_train, y_train, X_test, y_test):
+	y_train_score_list = []
+	for i in range(len(X_train)):
+		y_pred = model.predict(X_train[i:i + 1])
+		y_train_score_list.append(score_model(y_train[0], y_pred[0]))
+	y_test_score_list = []
+	for i in range(len(X_test)):
+		y_pred = model.predict(X_test[i:i+1])
+		y_test_score_list.append(score_model(y_test, y_pred[0]))
+	return y_train_score_list, y_test_score_list
 
 
 mypath = 'data/ref_sequences2/'
@@ -40,7 +47,7 @@ from os import listdir
 from os.path import isfile, join
 files = [f for f in listdir(mypath) if isfile(join(mypath, f)) and str(k) in f]
 
-for file in files:
+for file in files[:5]:
 	data.append(pd.read_csv(mypath + file))
 
 for i, entry_data in enumerate(data):
@@ -95,12 +102,16 @@ if True:
 
 	model.summary()
 
-if True:
+if False:
 	# fit model
 	history = model.fit(X_train, y_train, epochs = 100, batch_size = 80, verbose=1, validation_data=(X_test, y_test))
 
-
 if True:
+	model.load_weights('./checkpoints/my_checkpoint')
+	y_train_score_list, y_test_score_list = score_samples(model, X_train, y_train, X_test, y_test)
+
+
+if False:
 	plt.plot(history.history['loss'])
 	plt.plot(history.history['val_loss'])
 	plt.title('model absolute loss')
@@ -132,6 +143,10 @@ if False:
 	plt.savefig('figures/cnn4_' + str(k) + '_accuracy.png')
 	plt.clf()
 
+if False:
+	data = pd.DataFrame({'abs_loss': [history.history['loss']], 'abs_val_loss': [history.history['val_loss']]})
+
+	data.to_csv('figures/cnn4_' + str(k) + '.csv')
 
 
 #print(yhat)

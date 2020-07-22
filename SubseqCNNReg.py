@@ -18,22 +18,26 @@ def letter_to_index(letter):
 	return next(((i + 1) / 4 for i, _letter in enumerate(_alphabet) if _letter == letter), None)
 
 
+def add_buffer(values, n = 2):
+	return [e - n / 2 + i for e in values for i in range(n + 1) if e - n / 2 + i > -1]
+
+
 def score_model(y_act, y_pred, f = 15):
 	max_pos_pred = y_pred.argsort()[-f:]
 	max_pos_act = y_act.argsort()[-f:]
-	agreements = sum([e in max_pos_act for e in max_pos_pred])
+	agreements = sum([e in add_buffer(max_pos_act) for e in max_pos_pred])
 	return agreements / f
 
 
 def score_samples(model, X_train, y_train, X_test, y_test):
 	y_train_score_list = []
-	for i in range(len(X_train)):
+	for i in range(len(X_train)): # len(X_train)
 		y_pred = model.predict(X_train[i:i + 1])
-		y_train_score_list.append(score_model(y_train[0], y_pred[0]))
+		y_train_score_list.append(score_model(y_train[i], y_pred[0]))
 	y_test_score_list = []
 	for i in range(len(X_test)):
 		y_pred = model.predict(X_test[i:i+1])
-		y_test_score_list.append(score_model(y_test, y_pred[0]))
+		y_test_score_list.append(score_model(y_test[i], y_pred[0]))
 	return y_train_score_list, y_test_score_list
 
 
@@ -97,16 +101,14 @@ if True:
 	model.compile(optimizer='adam', loss='mean_squared_error', metrics=['mse'])
 	model.summary()
 
-if True:
+if False:
 	# fit model
 	history = model.fit(X_train, y_train, epochs = 100, batch_size = 80, verbose=1, validation_data=(X_test, y_test))
 
-if False:
+if True:
 	model.load_weights('./checkpoints/my_checkpoint')
 	
 y_train_score_list, y_test_score_list = score_samples(model, X_train, y_train, X_test, y_test)
-
-
 
 if False:
 	plt.plot(history.history['loss'])

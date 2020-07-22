@@ -82,33 +82,30 @@ if True:
 	model.add(BatchNormalization())
 	model.add(Dense(16, activation='relu'))
 	model.add(MaxPooling1D(pool_size=(2), strides=2))
-
 	model.add(Conv1D(filters=6, kernel_size=16, strides=(1), padding="same", input_shape=input_shape[1:]))
 	model.add(BatchNormalization())
 	model.add(Dense(32, activation='relu'))
 	model.add(MaxPooling1D(pool_size=(2), strides=2))
-
 	model.add(Conv1D(filters=6, kernel_size=16, strides=(1), padding="same", input_shape=input_shape[1:]))
 	model.add(BatchNormalization())
 	model.add(Dense(64, activation='relu'))
 	model.add(MaxPooling1D(pool_size=(2), strides=2))
-
 	model.add(Dropout(0.2))
 	model.add(Flatten())
 	model.add(Dense(input_shape[1:2][0]))
-
 	# Compiles the model
 	model.compile(optimizer='adam', loss='mean_squared_error', metrics=['mse'])
-
 	model.summary()
 
-if False:
+if True:
 	# fit model
 	history = model.fit(X_train, y_train, epochs = 100, batch_size = 80, verbose=1, validation_data=(X_test, y_test))
 
-if True:
+if False:
 	model.load_weights('./checkpoints/my_checkpoint')
-	y_train_score_list, y_test_score_list = score_samples(model, X_train, y_train, X_test, y_test)
+	
+y_train_score_list, y_test_score_list = score_samples(model, X_train, y_train, X_test, y_test)
+
 
 
 if False:

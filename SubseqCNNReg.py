@@ -58,7 +58,7 @@ def score_samples_buffer(model, X_train, y_train, X_test, y_test):
 	return y_train_score_list, y_test_score_list
 
 
-mypath = 'data/ref_sequences2/'
+mypath = 'data/ref_sequences0/'
 
 data = []
 
@@ -127,7 +127,7 @@ if True:
 	history = model.fit(X_train, y_train, epochs = 100, batch_size = 80, verbose=1, validation_data=(X_test, y_test))
 
 if True:
-	model.save_weights('./checkpoints/my_checkpoint1')
+	model.save_weights('./checkpoints/my_checkpoint0')
 
 if False:
 	model.load_weights('./checkpoints/my_checkpoint1')
@@ -151,13 +151,13 @@ if True:
 	plt.ylabel('loss')
 	plt.xlabel('epoch')
 	plt.legend(['train', 'test'], loc='upper left')
-	plt.savefig('figures/cnn2_' + str(k) + '_abs_loss.png')
+	plt.savefig('figures/cnn0_' + str(k) + '_abs_loss.png')
 	plt.clf()
 
 if True:
 	data = pd.DataFrame({'abs_loss': [history.history['loss']], 'abs_val_loss': [history.history['val_loss']]})
 
-	data.to_csv('figures/cnn2_' + str(k) + '.csv')
+	data.to_csv('figures/cnn0_' + str(k) + '.csv')
 
 
 #print(yhat)

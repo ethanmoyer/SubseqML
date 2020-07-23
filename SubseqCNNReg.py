@@ -25,6 +25,13 @@ def add_buffer(values, n = 2):
 def score_model(y_act, y_pred, f = 15):
 	max_pos_pred = y_pred.argsort()[-f:]
 	max_pos_act = y_act.argsort()[-f:]
+	agreements = sum([e in max_pos_act for e in max_pos_pred])
+	return agreements / f
+
+
+def score_model_buffer(y_act, y_pred, f = 15):
+	max_pos_pred = y_pred.argsort()[-f:]
+	max_pos_act = y_act.argsort()[-f:]
 	agreements = sum([e in add_buffer(max_pos_act) for e in max_pos_pred])
 	return agreements / f
 
@@ -101,51 +108,40 @@ if True:
 	model.compile(optimizer='adam', loss='mean_squared_error', metrics=['mse'])
 	model.summary()
 
-if False:
+if True:
 	# fit model
 	history = model.fit(X_train, y_train, epochs = 100, batch_size = 80, verbose=1, validation_data=(X_test, y_test))
 
 if True:
 	model.load_weights('./checkpoints/my_checkpoint')
 	
-y_train_score_list, y_test_score_list = score_samples(model, X_train, y_train, X_test, y_test)
+if True:
+	print('Without buffer')
+	y_train_score_list, y_test_score_list = score_samples(model, X_train, y_train, X_test, y_test)
 
-if False:
+	print('Train average:', sum(y_train_score_list) / len(y_train_score_list))
+	print('Test average:', sum(y_test_score_list) / len(y_test_score_list))
+
+	print('With buffer')
+	y_train_score_list, y_test_score_list = score_model_buffer(model, X_train, y_train, X_test, y_test)
+
+	print('Train average:', sum(y_train_score_list) / len(y_train_score_list))
+	print('Test average:', sum(y_test_score_list) / len(y_test_score_list))
+
+if True:
 	plt.plot(history.history['loss'])
 	plt.plot(history.history['val_loss'])
 	plt.title('model absolute loss')
 	plt.ylabel('loss')
 	plt.xlabel('epoch')
 	plt.legend(['train', 'test'], loc='upper left')
-	plt.savefig('figures/cnn4_' + str(k) + '_abs_loss.png')
+	plt.savefig('figures/cnn5_' + str(k) + '_abs_loss.png')
 	plt.clf()
 
-if False:
-	a = [math.sqrt(e) for e in history.history['loss']]
-	plt.plot(a)
-	a = [math.sqrt(e) for e in history.history['val_loss']]
-	plt.plot(a)
-	plt.title('model relative loss')
-	plt.ylabel('loss')
-	plt.xlabel('epoch')
-	plt.legend(['train', 'test'], loc='upper left')
-	plt.savefig('figures/cnn4_' + str(k) + '_rel_loss.png')
-	plt.clf()
-
-if False:
-	plt.plot(history.history['accuracy'])
-	plt.plot(history.history['val_accuracy'])
-	plt.title('model accuracy')
-	plt.ylabel('accuracy')
-	plt.xlabel('epoch')
-	plt.legend(['train', 'test'], loc='upper left')
-	plt.savefig('figures/cnn4_' + str(k) + '_accuracy.png')
-	plt.clf()
-
-if False:
+if True:
 	data = pd.DataFrame({'abs_loss': [history.history['loss']], 'abs_val_loss': [history.history['val_loss']]})
 
-	data.to_csv('figures/cnn4_' + str(k) + '.csv')
+	data.to_csv('figures/cnn5_' + str(k) + '.csv')
 
 
 #print(yhat)

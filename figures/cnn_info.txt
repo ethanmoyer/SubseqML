@@ -1,0 +1,2 @@
+cnn4_15 - 15-mer, 0 mismatches
+cnn5_15 - 15-mer, 1 mismatches

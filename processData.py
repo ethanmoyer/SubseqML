@@ -62,7 +62,7 @@ k = 15
 
 motif = 'ATTGATTCGGATAGC'
 
-for j in range(1000, 10000):
+for j in range(0, 10000):
 
 	# biopython
 	#sequence = select_random_subseq(parent_sequence[0], 1000)
@@ -71,7 +71,7 @@ for j in range(1000, 10000):
 	sequence = create_random_sequence(1000)
 	for i in range(int(random() * 11) + 5):
 		# Change insert random motif so that the length doesnt increase
-		sequence = insert_random_motif(sequence, motif, 0)
+		sequence = insert_random_motif(sequence, motif, 1)
 
 	# biopython
 	#kmer_list = create_kmer_list(str(sequence.seq), k)
@@ -90,7 +90,7 @@ for j in range(1000, 10000):
 	alignment_scores = [e / max(alignment_scores) for e in alignment_scores]
 
 	data = pd.DataFrame({'kmer': kmer_list, 'score': alignment_scores})
-	fdir = 'data/ref_sequences2/'
+	fdir = 'data/ref_sequences3/'
 	filename = fdir + random_kmer + '_' + str(j) + '_' + str(k) + '.txt'
 	if not glob.glob(filename):
 		data.to_csv(filename, mode = 'a', index = False)

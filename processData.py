@@ -72,7 +72,7 @@ for j in range(0, 10000):
 	sequence = create_random_sequence(1000)
 	for i in range(int(random() * 11) + 5):
 		# Change insert random motif so that the length doesnt increase
-		sequence = insert_random_motif(sequence, motif, 0)
+		sequence = insert_random_motif(sequence, motif, 2)
 
 	# biopython
 	#kmer_list = create_kmer_list(str(sequence.seq), k)

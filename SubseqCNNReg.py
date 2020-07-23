@@ -58,7 +58,7 @@ def score_samples_buffer(model, X_train, y_train, X_test, y_test):
 	return y_train_score_list, y_test_score_list
 
 
-mypath = 'data/ref_sequences1/'
+mypath = 'data/ref_sequences2/'
 
 data = []
 
@@ -147,13 +147,13 @@ if True:
 	plt.ylabel('loss')
 	plt.xlabel('epoch')
 	plt.legend(['train', 'test'], loc='upper left')
-	plt.savefig('figures/cnn1_' + str(k) + '_abs_loss.png')
+	plt.savefig('figures/cnn2_' + str(k) + '_abs_loss.png')
 	plt.clf()
 
 if True:
 	data = pd.DataFrame({'abs_loss': [history.history['loss']], 'abs_val_loss': [history.history['val_loss']]})
 
-	data.to_csv('figures/cnn1_' + str(k) + '.csv')
+	data.to_csv('figures/cnn2_' + str(k) + '.csv')
 
 
 #print(yhat)

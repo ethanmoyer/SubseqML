@@ -75,7 +75,7 @@ for i, entry_data in enumerate(data):
 	#print(f'File: {files[i]}')
 
 	# Look into this
-	if len(entry_data) != 986:
+	if len(entry_data) != 985:
 		continue
 
 	query = file.split('_')[0]

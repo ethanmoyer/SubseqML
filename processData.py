@@ -62,6 +62,7 @@ k = 15
 
 motif = 'ATTGATTCGGATAGC'
 
+
 for j in range(0, 10000):
 
 	# biopython
@@ -90,7 +91,7 @@ for j in range(0, 10000):
 	alignment_scores = [e / max(alignment_scores) for e in alignment_scores]
 
 	data = pd.DataFrame({'kmer': kmer_list, 'score': alignment_scores})
-	fdir = 'data/ref_sequences3/'
+	fdir = 'data/ref_sequences2/'
 	filename = fdir + random_kmer + '_' + str(j) + '_' + str(k) + '.txt'
 	if not glob.glob(filename):
 		data.to_csv(filename, mode = 'a', index = False)

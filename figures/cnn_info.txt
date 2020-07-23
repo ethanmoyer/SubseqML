@@ -1,2 +1,3 @@
 cnn0_15 - 15-mer, 0 mismatches
-cnn1_15 - 15-mer, 1 mismatches
+cnn1_15 - 15-mer, 1 mismatch
+cnn2_15 - 15-mer, 2 mismatches

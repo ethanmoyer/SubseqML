@@ -46,6 +46,18 @@ def score_samples(model, X_train, y_train, X_test, y_test):
 	return y_train_score_list, y_test_score_list
 
 
+def score_samples_buffer(model, X_train, y_train, X_test, y_test):
+	y_train_score_list = []
+	for i in range(len(X_train)): # len(X_train)
+		y_pred = model.predict(X_train[i:i + 1])
+		y_train_score_list.append(score_model_buffer(y_train[i], y_pred[0]))
+	y_test_score_list = []
+	for i in range(len(X_test)):
+		y_pred = model.predict(X_test[i:i+1])
+		y_test_score_list.append(score_model_buffer(y_test[i], y_pred[0]))
+	return y_train_score_list, y_test_score_list
+
+
 mypath = 'data/ref_sequences1/'
 
 data = []
@@ -111,18 +123,20 @@ if True:
 	history = model.fit(X_train, y_train, epochs = 100, batch_size = 80, verbose=1, validation_data=(X_test, y_test))
 
 if True:
+	model.save_weights('./checkpoints/my_checkpoint1')
+
+if False:
 	model.load_weights('./checkpoints/my_checkpoint1')
 	
 if True:
 	print('Without buffer')
 	y_train_score_list, y_test_score_list = score_samples(model, X_train, y_train, X_test, y_test)
-
 	print('Train average:', sum(y_train_score_list) / len(y_train_score_list))
 	print('Test average:', sum(y_test_score_list) / len(y_test_score_list))
 
+if True:
 	print('With buffer')
-	y_train_score_list, y_test_score_list = score_model_buffer(model, X_train, y_train, X_test, y_test)
-
+	y_train_score_list, y_test_score_list = score_samples_buffer(model, X_train, y_train, X_test, y_test)
 	print('Train average:', sum(y_train_score_list) / len(y_train_score_list))
 	print('Test average:', sum(y_test_score_list) / len(y_test_score_list))
 

@@ -1,0 +1,2 @@
+ref_sequences0 - 15-mer 0 mismatches
+ref_sequences1 - 15-mer 1 mismatch

@@ -5,8 +5,6 @@ import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Flatten, Conv1D, MaxPooling1D, Dropout, BatchNormalization
 
-import tensorflow.keras.backend as K 
-
 from sklearn.model_selection import train_test_split
 
 import matplotlib.pyplot as plt
@@ -48,7 +46,7 @@ def score_samples(model, X_train, y_train, X_test, y_test):
 	return y_train_score_list, y_test_score_list
 
 
-mypath = 'data/ref_sequences2/'
+mypath = 'data/ref_sequences1/'
 
 data = []
 
@@ -65,7 +63,7 @@ for i, entry_data in enumerate(data):
 	#print(f'File: {files[i]}')
 
 	query = file.split('_')[0]
-	entry_data['kmer'] = entry_data['kmer'] + query
+	entry_data['kmer'] = entry_data['kmer']
 
 	entry_data['kmer'] = entry_data['kmer'].apply(lambda x: [float(letter_to_index(elem)) for elem in x])
 
@@ -113,7 +111,7 @@ if True:
 	history = model.fit(X_train, y_train, epochs = 100, batch_size = 80, verbose=1, validation_data=(X_test, y_test))
 
 if True:
-	model.load_weights('./checkpoints/my_checkpoint')
+	model.load_weights('./checkpoints/my_checkpoint1')
 	
 if True:
 	print('Without buffer')
@@ -135,13 +133,13 @@ if True:
 	plt.ylabel('loss')
 	plt.xlabel('epoch')
 	plt.legend(['train', 'test'], loc='upper left')
-	plt.savefig('figures/cnn5_' + str(k) + '_abs_loss.png')
+	plt.savefig('figures/cnn1_' + str(k) + '_abs_loss.png')
 	plt.clf()
 
 if True:
 	data = pd.DataFrame({'abs_loss': [history.history['loss']], 'abs_val_loss': [history.history['val_loss']]})
 
-	data.to_csv('figures/cnn5_' + str(k) + '.csv')
+	data.to_csv('figures/cnn1_' + str(k) + '.csv')
 
 
 #print(yhat)

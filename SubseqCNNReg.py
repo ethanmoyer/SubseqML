@@ -2,14 +2,31 @@ import pandas as pd
 import numpy as np
 
 import tensorflow as tf
+from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Flatten, Conv1D, MaxPooling1D, Dropout, BatchNormalization
 
+
 from sklearn.model_selection import train_test_split
+from sklearn.model_selection import KFold
 
 import matplotlib.pyplot as plt
-
+import pickle
 import math
+
+from os import listdir
+from os.path import isfile, join
+
+nuc_list = ['A', 'T', 'C', 'G']
+nuc_series = pd.Series(nuc_list)
+nuc_encoder = np.array(pd.get_dummies(nuc_series))
+
+def one_hot_encode_sequence(seq):
+	seq_ = []
+	for e in seq:
+		seq_ += nuc_encoder[nuc_list.index(e)].tolist()
+	return np.array(seq_)
+
 
 def letter_to_index(letter):
 	_alphabet = 'ATCG'
@@ -58,50 +75,7 @@ def score_samples_buffer(model, X_train, y_train, X_test, y_test):
 	return y_train_score_list, y_test_score_list
 
 
-mypath = 'data/ref_sequences0/'
-
-data = []
-
-k = 15
-
-from os import listdir
-from os.path import isfile, join
-files = [f for f in listdir(mypath) if isfile(join(mypath, f)) and str(k) in f]
-
-for file in files:
-	data.append(pd.read_csv(mypath + file))
-
-for i, entry_data in enumerate(data):
-	#print(f'File: {files[i]}')
-
-	# Look into this
-	if len(entry_data) != 985:
-		continue
-
-	query = file.split('_')[0]
-	entry_data['kmer'] = entry_data['kmer']
-
-	entry_data['kmer'] = entry_data['kmer'].apply(lambda x: [float(letter_to_index(elem)) for elem in x])
-
-	a = np.array(entry_data['kmer'].tolist())
-
-	a = a.reshape((1, a.shape[0], k))
-
-	b = np.array(entry_data['score'].tolist())
-
-	if 'features' not in locals():
-		features = a
-		outputs = b
-	else:
-		features = np.vstack((features, a))
-		outputs = np.vstack((outputs, b))
-
-
-input_shape = features.shape
-
-X_train, X_test, y_train, y_test = train_test_split(features, outputs, test_size = 0.20)
-
-if True:
+def create_reg_cnn_model(input_shape):
 	model = Sequential()
 	model.add(Conv1D(filters=6, kernel_size=16, strides=(1), padding="same", input_shape=input_shape[1:]))
 	model.add(BatchNormalization())
@@ -121,30 +95,123 @@ if True:
 	# Compiles the model
 	model.compile(optimizer='adam', loss='mean_squared_error', metrics=['mse'])
 	model.summary()
+	return model
 
-if True:
-	# fit model
-	history = model.fit(X_train, y_train, epochs = 100, batch_size = 80, verbose=1, validation_data=(X_test, y_test))
 
-if True:
+
+mypath = 'data/ref_sequences0/'
+
+data = []
+
+k = 15
+
+files = [f for f in listdir(mypath) if isfile(join(mypath, f)) and str(k) in f]
+
+for file in files:
+	data.append(pd.read_csv(mypath + file))
+
+for i, entry in enumerate(data):
+	print(f'File: {files[i]}')
+
+	# Look into this
+	if len(entry) != 985:
+		continue
+
+	query = file.split('_')[0]
+
+	entry['kmer'] = entry['kmer'].apply(lambda x: one_hot_encode_sequence(x))
+
+	a = np.array(entry['kmer'].tolist())
+
+	a = a.reshape((1, a.shape[0], k * len(nuc_list)))
+
+	b = np.array(entry['score'].tolist())
+
+	if 'features' not in locals():
+		features = a
+		outputs = b
+	else:
+		features = np.vstack((features, a))
+		outputs = np.vstack((outputs, b))
+
+
+# X_train, X_test, y_train, y_test = train_test_split(features, outputs, test_size = 0.20)
+
+input_shape = features.shape
+
+# Cross-Validate
+# https://github.com/jeffheaton/t81_558_deep_learning/blob/master/t81_558_class_05_2_kfold.ipynb
+kf = KFold(5, shuffle=True, random_state=42) # Use for KFold classification
+
+early_stopping = EarlyStopping(patience=5)
+
+oos_y = []
+oos_pred = []
+
+fold = 0
+for train, test in kf.split(x):
+    fold += 1
+    print(f"Fold #{fold}")
+    x_train = x[train]
+    y_train = y[train]
+    x_test = x[test]
+    y_test = y[test]
+
+    model = create_reg_cnn_model(input_shape)
+
+    history = model.fit(X_train, y_train, epochs = 100, batch_size = 80, verbose=1, validation_data=(x_test, y_test), callbacks=[early_stopping])
+
+    pred = model.predict(x_test)
+	
+    oos_y.append(y_test)
+    oos_pred.append(pred)
+
+if False:
+	train_loss = []
+	val_loss = []
+	train_score = []
+	val_score = []
+	train_score_buffer = []
+	val_score_buffer = []
+
+if False:
+	for q in range(10):
+		print('Percentage complete: ', round(q / 100 * 100, 2), '%', sep='')
+		history = model.fit(X_train, y_train, epochs = 100, batch_size = 80, verbose=0, validation_data=(X_test, y_test))
+		train_loss.append(history.history['loss'][99])
+		val_loss.append(history.history['val_loss'][99])
+		y_train_score_list, y_test_score_list = score_samples(model, X_train, y_train, X_test, y_test)
+		train_score.append(sum(y_train_score_list) / len(y_train_score_list))
+		val_score.append(sum(y_test_score_list) / len(y_test_score_list))
+		y_train_score_list, y_test_score_list = score_samples_buffer(model, X_train, y_train, X_test, y_test)
+		train_score_buffer.append(sum(y_train_score_list) / len(y_train_score_list))
+		val_score_buffer.append(sum(y_test_score_list) / len(y_test_score_list))
+	with open("data/ref_sequences0_data/train_loss0", "wb") as fp: pickle.dump(train_loss, fp)
+	with open("data/ref_sequences0_data/val_loss0", "wb") as fp: pickle.dump(val_loss, fp)
+	with open("data/ref_sequences0_data/train_score0", "wb") as fp: pickle.dump(train_score, fp)
+	with open("data/ref_sequences0_data/val_score0", "wb") as fp: pickle.dump(val_score, fp)
+	with open("data/ref_sequences0_data/train_score_buffer0", "wb") as fp: pickle.dump(train_score_buffer, fp)
+	with open("data/ref_sequences0_data/val_score_buffer0", "wb") as fp: pickle.dump(val_score_buffer, fp)
+
+if False:
 	model.save_weights('./checkpoints/my_checkpoint0')
 
 if False:
 	model.load_weights('./checkpoints/my_checkpoint1')
 	
-if True:
+if False:
 	print('Without buffer')
 	y_train_score_list, y_test_score_list = score_samples(model, X_train, y_train, X_test, y_test)
 	print('Train average:', sum(y_train_score_list) / len(y_train_score_list))
 	print('Test average:', sum(y_test_score_list) / len(y_test_score_list))
 
-if True:
+if False:
 	print('With buffer')
 	y_train_score_list, y_test_score_list = score_samples_buffer(model, X_train, y_train, X_test, y_test)
 	print('Train average:', sum(y_train_score_list) / len(y_train_score_list))
 	print('Test average:', sum(y_test_score_list) / len(y_test_score_list))
 
-if True:
+if False:
 	plt.plot(history.history['loss'])
 	plt.plot(history.history['val_loss'])
 	plt.title('model absolute loss')
@@ -154,7 +221,7 @@ if True:
 	plt.savefig('figures/cnn0_' + str(k) + '_abs_loss.png')
 	plt.clf()
 
-if True:
+if False:
 	data = pd.DataFrame({'abs_loss': [history.history['loss']], 'abs_val_loss': [history.history['val_loss']]})
 
 	data.to_csv('figures/cnn0_' + str(k) + '.csv')

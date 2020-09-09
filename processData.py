@@ -17,16 +17,6 @@ def getFasta(fasta = "data/sequence.fasta"):
 	return records
 
 
-# Create random subsequence with a given length
-# sequence = create_random_sequence(1000)
-def create_random_sequence(n):
-	dna = ["A","G","C","T"]
-	seq = ''
-	for i in range(n):
-	    seq += choice(dna)
-	return seq
-
-
 # Create a list of kmers given a sequence
 def create_kmer_list(seq, k):
 	return [seq[i:i + k] for i in range(len(seq) - k)]
@@ -57,11 +47,43 @@ def insert_random_motif(seq, motif, mismatches=0):
 	return seq[:i] + motif + seq[i + len(motif):]
 
 
+# Create random subsequence with a given length
+# sequence = create_random_sequence(1000)
+def create_random_sequence(n):
+	dna = ["A","G","C","T"]
+	seq = ''
+	for i in range(n):
+	    seq += choice(dna)
+	return seq
+
+
+# Given a list of motifs, the function returns the counts of each nucleotide (rows) across the length of the k-mers (columns).
+def get_nuc_counts(motif_list):
+	count_list = [[0] * len(motif_list[0]) for i in range(4)]
+	for i in range(len(motif_list[0])):
+		for k in range(len(nuc_list)):
+			count_list[k][i] = [motif_list[j][i] for j in range(len(motif_list))].count(nuc_list[k])
+	return count_list
+
+
+# Given a matrix of nucleotide counts across each position in a k-mer, the function returns a frequency matrix using Lapace's theorem: P(x = 1 | x1, x2, ..., xn = 1) = (s + 1) / (n + 2).
+def get_nuc_frequency_laplace(nuc_counts):
+	nuc_counts = (np.array(nuc_counts) + 1) / 8
+	return nuc_counts.tolist()
+
+
 #parent_sequence = getFasta()
 k = 15
 
 motif = 'ATTGATTCGGATAGC'
 
+max_number_of_mutations = 5
+
+motifs = [motif[:i] + create_random_sequence(1) + motif[i:] for i in [int(random() * len(motif))] for _ in range(int(random() * max_number_of_mutations + 1)) for _ in range(10)]
+
+nuc_frequency = get_nuc_frequency_laplace(get_nuc_counts(motifs))
+
+# When we insert motifs, we want to select their nucleotides based on this frequency table.
 
 for j in range(0, 10000):
 

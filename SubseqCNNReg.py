@@ -9,10 +9,12 @@ from tensorflow.keras.layers import Dense, Flatten, Conv1D, MaxPooling1D, Dropou
 
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import KFold
+from sklearn import metrics
 
 import matplotlib.pyplot as plt
 import pickle
 import math
+from random import seed
 
 from os import listdir
 from os.path import isfile, join
@@ -97,74 +99,118 @@ def create_reg_cnn_model(input_shape):
 	model.summary()
 	return model
 
+if False:
+	mypath = 'data/ref_sequences0/'
 
+	data = []
 
-mypath = 'data/ref_sequences0/'
+	k = 15
 
-data = []
+	files = [f for f in listdir(mypath) if isfile(join(mypath, f)) and str(k) in f]
 
-k = 15
+	for file in files:
+		data.append(pd.read_csv(mypath + file))
 
-files = [f for f in listdir(mypath) if isfile(join(mypath, f)) and str(k) in f]
+	for i, entry in enumerate(data):
+		print(f'File: {files[i]}')
 
-for file in files:
-	data.append(pd.read_csv(mypath + file))
+		# Look into this
+		if len(entry) != 985:
+			continue
 
-for i, entry in enumerate(data):
-	print(f'File: {files[i]}')
+		query = file.split('_')[0]
 
-	# Look into this
-	if len(entry) != 985:
-		continue
+		entry['kmer'] = entry['kmer'].apply(lambda x: one_hot_encode_sequence(x))
 
-	query = file.split('_')[0]
+		a = np.array(entry['kmer'].tolist())
 
-	entry['kmer'] = entry['kmer'].apply(lambda x: one_hot_encode_sequence(x))
+		a = a.reshape((1, a.shape[0], k * len(nuc_list)))
 
-	a = np.array(entry['kmer'].tolist())
+		b = np.array(entry['score'].tolist())
 
-	a = a.reshape((1, a.shape[0], k * len(nuc_list)))
+		if 'features' not in locals():
+			features = a
+			outputs = b
+		else:
+			features = np.vstack((features, a))
+			outputs = np.vstack((outputs, b))
 
-	b = np.array(entry['score'].tolist())
+	with open("data/ref_seq0_data", "wb") as fp: pickle.dump((features, outputs), fp, protocol=4)
 
-	if 'features' not in locals():
-		features = a
-		outputs = b
-	else:
-		features = np.vstack((features, a))
-		outputs = np.vstack((outputs, b))
+if False:
+	quit()
 
-
-# X_train, X_test, y_train, y_test = train_test_split(features, outputs, test_size = 0.20)
+(features, outputs) = pickle.load(open("data/ref_seq0_data", 'rb'))
 
 input_shape = features.shape
 
 # Cross-Validate
 # https://github.com/jeffheaton/t81_558_deep_learning/blob/master/t81_558_class_05_2_kfold.ipynb
-kf = KFold(5, shuffle=True, random_state=42) # Use for KFold classification
+
+seed(42)
+
+kf = KFold(10, shuffle=True, random_state=42) # Use for KFold classification
 
 early_stopping = EarlyStopping(patience=5)
 
+# Out of sample
 oos_y = []
 oos_pred = []
 
 fold = 0
-for train, test in kf.split(x):
-    fold += 1
-    print(f"Fold #{fold}")
-    x_train = x[train]
-    y_train = y[train]
-    x_test = x[test]
-    y_test = y[test]
 
-    model = create_reg_cnn_model(input_shape)
+for train, test in kf.split(features):
+	fold += 1
+	print(f"Fold #{fold}")
 
-    history = model.fit(X_train, y_train, epochs = 100, batch_size = 80, verbose=1, validation_data=(x_test, y_test), callbacks=[early_stopping])
+	x_train = features[train]
+	y_train = outputs[train]
+	x_test = features[test]
+	y_test = outputs[test]
 
-    pred = model.predict(x_test)
-	
-    oos_y.append(y_test)
-    oos_pred.append(pred)
+	model = create_reg_cnn_model(input_shape)
+	history = model.fit(x_train, y_train, epochs = 100, batch_size = 80, verbose=1, validation_data=(x_test, y_test), callbacks=[early_stopping])
+
+	pred = model.predict(x_test)
+	oos_y.append(y_test)
+	oos_pred.append(pred)
+
+	# Measure this fold's RMSE
+	rmse = np.sqrt(metrics.mean_squared_error(pred, y_test))
+	print(f"Fold RMSE: {rmse}")
+
+	# Measure the accuracy of the model at each fold.
+	score_without_buffer = 0
+	for i in range(len(pred)):
+		score_without_buffer += score_model(pred[i], y_test[i])
+	print(f'Avg fold score without a buffer: {score_without_buffer / len(pred)}')
+
+	score_with_buffer = 0
+	for i in range(len(pred)):
+		score_with_buffer += score_model_buffer(pred[i], y_test[i])
+	print(f'Avg fold score without a buffer: {score_with_buffer / len(pred)}')
+
+
+# (oos_y, oos_pred) = pickle.load(open("data/ref_seq0_crossval", 'rb'))
+
+# This is all out of sample
+
+oos_y = np.concatenate(oos_y)
+oos_pred = np.concatenate(oos_pred)
+rmse = metrics.mean_squared_error(oos_pred,oos_y)
+print(f"Final, out of sample score (RMSE): {rmse}")
+
+score_without_buffer = 0
+for i in range(len(oos_y)):
+	score_without_buffer += score_model(oos_pred[i], oos_y[i])
+
+print(f'Avg fold score without a buffer: {score_without_buffer / len(oos_y)}')
+
+score_with_buffer = 0
+for i in range(len(oos_y)):
+	score_with_buffer += score_model_buffer(oos_pred[i], oos_y[i])
+
+print(f'Avg fold score without a buffer: {score_with_buffer / len(oos_y)}')
 
 if False:
 	train_loss = []
@@ -177,7 +223,7 @@ if False:
 if False:
 	for q in range(10):
 		print('Percentage complete: ', round(q / 100 * 100, 2), '%', sep='')
-		history = model.fit(X_train, y_train, epochs = 100, batch_size = 80, verbose=0, validation_data=(X_test, y_test))
+		history = model.fit(X_train, y_train, epochs = 100, batch_size = 80, verbose=0, validation_data=(X_test, y_test), callbacks=[early_stopping])
 		train_loss.append(history.history['loss'][99])
 		val_loss.append(history.history['val_loss'][99])
 		y_train_score_list, y_test_score_list = score_samples(model, X_train, y_train, X_test, y_test)
